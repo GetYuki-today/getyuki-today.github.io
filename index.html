@@ -1,0 +1,1383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Framer - Ship sites with style</title>
+    <style>
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #fff;
+            font-size: 16px;
+            overflow-x: hidden; /* 防止水平滚动条 */
+        }
+        
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* 动画关键帧定义 */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from { 
+                transform: translateY(30px); 
+                opacity: 0;
+            }
+            to { 
+                transform: translateY(0); 
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideInLeft {
+            from { 
+                transform: translateX(-50px); 
+                opacity: 0;
+            }
+            to { 
+                transform: translateX(0); 
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideInRight {
+            from { 
+                transform: translateX(50px); 
+                opacity: 0;
+            }
+            to { 
+                transform: translateX(0); 
+                opacity: 1;
+            }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        @keyframes floatUpDown {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        @keyframes floatLeftRight {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(20px); }
+        }
+        
+        @keyframes gradientFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        /* 添加滚动显示类 */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+        
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Header styles */
+        header {
+            border-bottom: 1px solid #f0f0f0;
+            padding: 16px 0;
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            animation: slideInDown 0.5s ease-out;
+        }
+        
+        @keyframes slideInDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        nav {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo {
+            margin-right: 24px;
+            animation: pulse 2s infinite;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 24px;
+        }
+        
+        .nav-link {
+            font-size: 16px;
+            color: #666;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 0;
+            background-color: #000;
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            color: #000;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        /* Hero section */
+        .hero {
+            text-align: center;
+            padding: 180px 0 100px; /* 增加顶部内边距，将标题往下移 */
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(120deg, rgba(255,255,255,0.8) 0%, rgba(250,250,250,0.8) 100%);
+        }
+        
+        /* 背景动画元素 */
+        .bg-animation {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .bg-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(45deg, rgba(0,0,0,0.02) 0%, rgba(0,0,0,0) 70%);
+            opacity: 0.5;
+        }
+        
+        .bg-circle-1 {
+            width: 400px;
+            height: 400px;
+            top: -200px;
+            left: -200px;
+            animation: rotate 30s linear infinite;
+        }
+        
+        .bg-circle-2 {
+            width: 600px;
+            height: 600px;
+            bottom: -300px;
+            right: -300px;
+            animation: rotate 40s linear infinite reverse;
+        }
+        
+        .bg-circle-3 {
+            width: 300px;
+            height: 300px;
+            top: 20%;
+            right: 10%;
+            animation: floatUpDown 15s ease-in-out infinite;
+        }
+        
+        .bg-circle-4 {
+            width: 200px;
+            height: 200px;
+            bottom: 30%;
+            left: 15%;
+            animation: floatLeftRight 12s ease-in-out infinite;
+        }
+        
+        .bg-gradient {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(120deg, rgba(250,250,250,0.1) 0%, rgba(255,255,255,0.1) 50%, rgba(250,250,250,0.1) 100%);
+            background-size: 200% 200%;
+            animation: gradientFlow 15s ease infinite;
+            z-index: -2;
+        }
+        
+        .bg-dots {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(rgba(0,0,0,0.03) 1px, transparent 1px);
+            background-size: 20px 20px;
+            z-index: -3;
+        }
+        
+        .hero h1 {
+            font-size: 54px; /* 增大标题字体 */
+            font-weight: bold;
+            margin-bottom: 20px;
+            animation: slideUp 0.8s ease-out forwards;
+            opacity: 0;
+            position: relative;
+        }
+        
+        .hero h1::after {
+            content: '';
+            position: absolute;
+            width: 80px;
+            height: 4px;
+            background-color: #000;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+        
+        .hero p {
+            font-size: 24px; /* 增大副标题字体 */
+            color: #666;
+            max-width: 700px;
+            margin: 0 auto 40px;
+            animation: slideUp 0.8s ease-out 0.2s forwards;
+            opacity: 0;
+        }
+        
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            animation: slideUp 0.8s ease-out 0.4s forwards;
+            opacity: 0;
+        }
+        
+        .button {
+            padding: 12px 32px; /* 增大按钮尺寸 */
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .button-primary {
+            background-color: #000;
+            color: #fff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .button-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: all 0.6s ease;
+        }
+        
+        .button-primary:hover {
+            background-color: #333;
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+            transform: translateY(-3px);
+        }
+        
+        .button-primary:hover::before {
+            left: 100%;
+        }
+        
+        .button-secondary {
+            color: #666;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .button-secondary::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: #000;
+            transition: width 0.3s ease;
+        }
+        
+        .button-secondary:hover {
+            color: #000;
+        }
+        
+        .button-secondary:hover::after {
+            width: 100%;
+        }
+        
+        /* Features section */
+        .features {
+            padding: 100px 0;
+            position: relative;
+            background: linear-gradient(180deg, #fff 0%, #f9f9f9 100%);
+        }
+        
+        .features-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        .features-bg::before {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0,0,0,0.02) 0%, rgba(0,0,0,0) 70%);
+            top: 10%;
+            left: -200px;
+            animation: floatLeftRight 20s ease-in-out infinite alternate;
+        }
+        
+        .features-bg::after {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0,0,0,0.02) 0%, rgba(0,0,0,0) 70%);
+            bottom: 10%;
+            right: -250px;
+            animation: floatUpDown 25s ease-in-out infinite alternate;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+        }
+        
+        .feature-card {
+            background-color: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.5s ease;
+            transform: translateY(50px);
+            opacity: 0;
+        }
+        
+        .feature-card.active {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+        }
+        
+        .feature-image {
+            height: 200px;
+            background-color: #e5e5e5;
+            background-image: linear-gradient(45deg, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%, #ddd),
+                              linear-gradient(45deg, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%, #ddd);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .feature-image::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0) 100%);
+            transition: all 0.5s ease;
+        }
+        
+        .feature-card:hover .feature-image::after {
+            transform: scale(1.1);
+        }
+        
+        .feature-content {
+            padding: 24px;
+        }
+        
+        .feature-content h3 {
+            font-size: 22px;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover .feature-content h3 {
+            transform: translateX(5px);
+        }
+        
+        .feature-content p {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover .feature-content p {
+            transform: translateX(5px);
+        }
+        
+        /* Pricing section */
+        .pricing {
+            padding: 100px 0;
+            position: relative;
+            background: linear-gradient(180deg, #f9f9f9 0%, #fff 100%);
+        }
+        
+        .pricing-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .pricing-bg::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(rgba(0,0,0,0.02) 1px, transparent 1px);
+            background-size: 30px 30px;
+            opacity: 0.5;
+        }
+        
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+        }
+        
+        .pricing-card {
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+            padding: 30px;
+            background-color: #fff;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.06);
+            transition: all 0.5s ease;
+            transform: translateY(50px);
+            opacity: 0;
+        }
+        
+        .pricing-card.active {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .pricing-card:hover {
+            transform: translateY(-5px) scale(1.03);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+            z-index: 1;
+        }
+        
+        .pricing-tier {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+        
+        .pricing-amount {
+            display: flex;
+            align-items: baseline;
+            margin-bottom: 24px;
+        }
+        
+        .pricing-amount .price {
+            font-size: 42px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .pricing-card:hover .pricing-amount .price {
+            color: #000;
+            transform: scale(1.05);
+        }
+        
+        .pricing-amount .period {
+            font-size: 18px;
+            color: #666;
+            margin-left: 4px;
+        }
+        
+        .feature-list {
+            list-style: none;
+            margin-bottom: 24px;
+        }
+        
+        .feature-list li {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 16px;
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+        
+        .pricing-card:hover .feature-list li {
+            transform: translateX(5px);
+        }
+        
+        .feature-list .check-icon {
+            margin-right: 10px;
+            color: #000;
+        }
+        
+        .feature-list .feature-text {
+            color: #666;
+        }
+        
+        .button-full {
+            display: block;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .button-outline {
+            border: 1px solid #e5e5e5;
+            background-color: transparent;
+            color: #666;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .button-outline::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0,0,0,0.05), transparent);
+            transition: all 0.6s ease;
+        }
+        
+        .button-outline:hover {
+            background-color: #f5f5f5;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            color: #000;
+            border-color: #ccc;
+        }
+        
+        .button-outline:hover::before {
+            left: 100%;
+        }
+        
+        /* 价格下方超链接 */
+        .pricing-links {
+            text-align: center;
+            margin-top: 40px;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+        
+        .pricing-links.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .pricing-links a {
+            display: inline-block;
+            margin: 0 15px;
+            color: #333;
+            font-size: 18px;
+            font-weight: 500;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .pricing-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 0;
+            background-color: #000;
+            transition: width 0.3s ease;
+        }
+        
+        .pricing-links a:hover {
+            color: #000;
+            transform: translateY(-2px);
+        }
+        
+        .pricing-links a:hover::after {
+            width: 100%;
+        }
+        
+        /* FAQ section */
+        .faq {
+            padding: 100px 0;
+            position: relative;
+            background: linear-gradient(180deg, #fff 0%, #f8f8f8 100%);
+        }
+        
+        .faq-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        .faq-bg::before {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0,0,0,0.02) 0%, rgba(0,0,0,0) 70%);
+            top: 20%;
+            right: -150px;
+            animation: floatUpDown 20s ease-in-out infinite alternate;
+        }
+        
+        .faq-bg::after {
+            content: '';
+            position: absolute;
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0,0,0,0.02) 0%, rgba(0,0,0,0) 70%);
+            bottom: 10%;
+            left: -125px;
+            animation: floatLeftRight 15s ease-in-out infinite alternate;
+        }
+        
+        .faq h2 {
+            font-size: 36px;
+            text-align: center;
+            margin-bottom: 48px;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+        
+        .faq h2.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .faq-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .faq-item {
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.04);
+            transition: all 0.5s ease;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        
+        .faq-item.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .faq-item:hover {
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        .faq-question {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            width: 100%;
+            text-align: left;
+            background: none;
+            border: none;
+            font-size: 20px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .faq-question:hover {
+            color: #000;
+            background-color: rgba(0,0,0,0.02);
+        }
+        
+        .faq-question svg {
+            transition: transform 0.3s ease;
+        }
+        
+        .faq-question.open svg {
+            transform: rotate(45deg);
+        }
+        
+        .faq-answer {
+            padding: 0 20px 20px;
+            display: none;
+            font-size: 18px;
+            animation: fadeIn 0.5s ease forwards;
+        }
+        
+        .faq-answer.active {
+            display: block;
+        }
+        
+        /* 底部版权信息 */
+        footer {
+            background-color: #f8f8f8;
+            padding: 60px 0 40px;
+            text-align: center;
+            border-top: 1px solid #eaeaea;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .footer-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        .footer-bg::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(rgba(0,0,0,0.02) 1px, transparent 1px);
+            background-size: 20px 20px;
+            opacity: 0.5;
+        }
+        
+        /* 版权信息部分 - 增强显示效果 */
+        .copyright-section {
+            padding: 30px;
+            background-color: #000;
+            color: #fff;
+            margin-top: 40px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .copyright-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 70%);
+            z-index: 0;
+        }
+        
+        .copyright-logo {
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+        
+        .copyright-container {
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .copyright {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 10px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s ease;
+        }
+        
+        .copyright.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .copyright-secondary {
+            font-size: 14px;
+            color: rgba(255,255,255,0.7);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s ease 0.1s;
+        }
+        
+        .copyright-secondary.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .copyright-divider {
+            width: 60px;
+            height: 3px;
+            background-color: rgba(255,255,255,0.3);
+            margin: 15px auto;
+        }
+        
+        .footer-links {
+            margin-top: 20px;
+            position: relative;
+            z-index: 1;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s ease 0.2s;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+        
+        .footer-links.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .footer-links a {
+            color: rgba(255,255,255,0.8);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .footer-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 1px;
+            bottom: -2px;
+            left: 0;
+            background-color: #fff;
+            transition: width 0.3s ease;
+        }
+        
+        .footer-links a:hover {
+            color: #fff;
+            transform: translateY(-2px);
+        }
+        
+        .footer-links a:hover::after {
+            width: 100%;
+        }
+        
+        .footer-bottom {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 12px;
+            color: rgba(255,255,255,0.5);
+        }
+        
+        /* 浮动元素动画 */
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        /* 鼠标跟随效果 */
+        .cursor-follower {
+            position: fixed;
+            width: 30px;
+            height: 30px;
+            background-color: rgba(0,0,0,0.1);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: transform 0.1s ease, width 0.3s ease, height 0.3s ease, background-color 0.3s ease;
+            opacity: 0;
+        }
+        
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .button-group {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .hero {
+                padding: 120px 0 80px; /* 调整移动端的内边距 */
+            }
+            
+            .hero h1 {
+                font-size: 36px;
+            }
+            
+            .hero p {
+                font-size: 18px;
+            }
+            
+            .pricing-links {
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .cursor-follower {
+                display: none;
+            }
+            
+            .copyright-section {
+                padding: 20px;
+                margin-top: 30px;
+            }
+            
+            .footer-links {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 鼠标跟随效果 -->
+    <div class="cursor-follower"></div>
+
+    <!-- Navigation -->
+    <header>
+        <div class="container">
+            <nav>
+                <a href="#" class="logo">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="24" height="24" rx="4" fill="#000"/>
+                    </svg>
+                </a>
+                <div class="nav-links">
+                    <a href="index.html" class="nav-link">Home</a>
+                    <a href="changelog.html" class="nav-link">ChangeLog</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <!-- 背景动画元素 -->
+        <div class="bg-animation">
+            <div class="bg-gradient"></div>
+            <div class="bg-dots"></div>
+            <div class="bg-circle bg-circle-1"></div>
+            <div class="bg-circle bg-circle-2"></div>
+            <div class="bg-circle bg-circle-3"></div>
+            <div class="bg-circle bg-circle-4"></div>
+        </div>
+        
+        <div class="container">
+            <h1>Yuki Client</h1>
+            <p>一个实用的MineCraft黑客客户端</p>
+            <div class="button-group">
+                <a href="https://qm.qq.com/cgi-bin/qm/qr?k=blXPWTUW-Hrv-6rMPoIO1cTvr2R8SuNA&jump_from=webapi&authKey=eBOSUAl79qAqgwb4hl//Aw0+4bBhQ5EwKFhAAZfuqBQ0jUOtPVgV3CBj4x6+9qmW" class="button button-primary">加入QQ群组</a>
+                <a href="changelog.html" class="button button-secondary">更改日志</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        
+        <div class="container">
+            <div class="features-grid">
+                <!-- Feature 1 -->
+                <div class="feature-card reveal">
+                    <div class="feature-image"></div>
+                    <div class="feature-content">
+                        <h3>没想好写啥</h3>
+                        <p>awa</p>
+                    </div>
+                </div>
+                
+                <!-- Feature 2 -->
+                <div class="feature-card reveal" style="transition-delay: 0.2s;">
+                    <div class="feature-image"></div>
+                    <div class="feature-content">
+                        <h3>这个也是</h3>
+                        <p>=w=</p>
+                    </div>
+                </div>
+                
+                <!-- Feature 3 -->
+                <div class="feature-card reveal" style="transition-delay: 0.4s;">
+                    <div class="feature-image"></div>
+                    <div class="feature-content">
+                        <h3>这个懒得写</h3>
+                        <p>^^</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing">
+        
+        <div class="container">
+            <div class="pricing-grid">
+                <!-- Pricing Tier 1 -->
+                <div class="pricing-card reveal">
+                    <p class="pricing-tier">Yuki 普通用户</p>
+                    <div class="pricing-amount">
+                        <span class="price">$5</span>
+                        <span class="period">/month</span>
+                    </div>
+                    <ul class="feature-list">
+                        <li>
+                            <span class="check-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </span>
+                            <span class="feature-text">1 project</span>
+                        </li>
+                        <li>
+                            <span class="check-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </span>
+                            <span class="feature-text">Analytics</span>
+                        </li>
+                        <li>
+                            <span class="check-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </span>
+                            <span class="feature-text">Insights Panel</span>
+                        </li>
+                        <li>
+                            <span class="check-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </span>
+                            <span class="feature-text">Basic Features</span>
+                        </li>
+                    </ul>
+                    <a href="#" class="button button-outline button-full">前往购买</a>
+                </div>
+                
+                <!-- Pricing Tier 2 -->
+                <div class="pricing-card reveal" style="transition-delay: 0.2s;">
+                    <p class="pricing-tier">Yuki 普通用户</p>
+                    <div class="pricing-amount">
+                        <span class="price">$0</span>
+                        <span class="period">/暂时</span>
+                    </div>
+                    <ul class="feature-list">
+                        <li>
+                            <span class="check-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </span>
+                            <span class="feature-text">免费的更新</span>
+                        </li>
+                        <li>
+                            <span class="check-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </span>
+                            <span class="feature-text">更改</span>
+                        </li>
+                        <li>
+                            <span class="check-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </span>
+                            <span class="feature-text">Insights Panel</span>
+                        </li>
+                        <li>
+                            <span class="check-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </span>
+                            <span class="feature-text">Basic Features</span>
+                        </li>
+                    </ul>
+                    <a href="#" class="button button-primary button-full">前往购买</a>
+                </div>
+                
+                <!-- Pricing Tier 3 -->
+                <div class="pricing-card reveal" style="transition-delay: 0.4s;">
+                    <p class="pricing-tier">Yuki 普通用户</p>
+                    <div class="pricing-amount">
+                        <span class="price">$50</span>
+                        <span class="period">/month</span>
+                    </div>
+                    <ul class="feature-list">
+                        <li>
+                            <span class="check-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </span>
+                            <span class="feature-text">Unlimited Projects</span>
+                        </li>
+                        <li>
+                            <span class="check-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </span>
+                            <span class="feature-text">Analytics</span>
+                        </li>
+                        <li>
+                            <span class="check-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </span>
+                            <span class="feature-text">Insights Panel</span>
+                        </li>
+                        <li>
+                            <span class="check-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </span>
+                            <span class="feature-text">Basic Features</span>
+                        </li>
+                    </ul>
+                    <a href="#" class="button button-outline button-full">前往购买</a>
+                </div>
+            </div>
+            
+            <!-- 价格下方添加超链接 -->
+            <div class="pricing-links reveal">
+                <a href="#">一个卡网</a>
+                <a href="#">一个卡网</a>
+                <a href="#">一个卡网</a>
+                <a href="#">一个卡网</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq">
+        
+        <div class="container">
+            <h2 class="reveal">FAQ</h2>
+            <div class="faq-container">
+                <!-- FAQ Item 1 -->
+                <div class="faq-item reveal" style="transition-delay: 0.1s;">
+                    <button class="faq-question">
+                        我可以和别人一起使用吗？
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                    <div class="faq-answer">
+                        <p>很遗憾的，不可以。只能购买者一个人使用。🤗</p>
+                    </div>
+                </div>
+                
+                <!-- FAQ Item 2 -->
+                <div class="faq-item reveal" style="transition-delay: 0.2s;">
+                    <button class="faq-question">
+                        我可以在别的地方，电脑使用吗？
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                    <div class="faq-answer">
+                        <p>如果你使用了IP验证，那你不可以再指定外的地方使用。在其它电脑使用的话请先更改HWID。😎</p>
+                    </div>
+                </div>
+                
+                <!-- FAQ Item 3 -->
+                <div class="faq-item reveal" style="transition-delay: 0.3s;">
+                    <button class="faq-question">
+                        我应该如何使用这个客户端？
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                    <div class="faq-answer">
+                        <p>我还没想好QWQ。😒</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 底部版权信息 -->
+    <footer>
+        
+        <div class="container">
+            <!-- 增强版权信息部分 -->
+            <div class="copyright-section reveal">
+                <div class="copyright-logo">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="24" height="24" rx="4" fill="#fff"/>
+                    </svg>
+                </div>
+                <div class="copyright-container">
+                    <p class="copyright reveal">Copyright © 2025 Yuki-studio, Inc. All rights reserved.</p>
+                    <div class="copyright-divider"></div>
+                    <p class="copyright-secondary reveal">感谢所有开发者和用户</p>
+                </div>
+                <div class="footer-links reveal">
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Cookie Policy</a>
+                    <a href="#">Contact Us</a>
+                    <a href="#">Careers</a>
+                </div>
+                <div class="footer-bottom">
+                    <p>Made with ❤️ from Maori</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 滚动显示动画
+        function revealOnScroll() {
+            const reveals = document.querySelectorAll('.reveal');
+            
+            for (let i = 0; i < reveals.length; i++) {
+                const windowHeight = window.innerHeight;
+                const elementTop = reveals[i].getBoundingClientRect().top;
+                const elementVisible = 150;
+                
+                if (elementTop < windowHeight - elementVisible) {
+                    reveals[i].classList.add('active');
+                }
+            }
+        }
+        
+        // 初始化时检查一次
+        revealOnScroll();
+        
+        // 滚动时检查
+        window.addEventListener('scroll', revealOnScroll);
+        
+        // FAQ 手风琴效果
+        document.querySelectorAll('.faq-question').forEach(button => {
+            button.addEventListener('click', () => {
+                const answer = button.nextElementSibling;
+                const isActive = answer.classList.contains('active');
+                
+                // 关闭所有答案
+                document.querySelectorAll('.faq-answer').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                document.querySelectorAll('.faq-question').forEach(item => {
+                    item.classList.remove('open');
+                });
+                
+                // 切换当前答案
+                if (!isActive) {
+                    answer.classList.add('active');
+                    button.classList.add('open');
+                }
+            });
+        });
+        
+        // 鼠标跟随效果
+        const cursorFollower = document.querySelector('.cursor-follower');
+        
+        document.addEventListener('mousemove', (e) => {
+            cursorFollower.style.opacity = '1';
+            cursorFollower.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+        });
+        
+        // 鼠标悬停在按钮和链接上时的效果
+        const interactiveElements = document.querySelectorAll('a, button');
+        
+        interactiveElements.forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                cursorFollower.style.width = '50px';
+                cursorFollower.style.height = '50px';
+                cursorFollower.style.backgroundColor = 'rgba(0,0,0,0.05)';
+            });
+            
+            el.addEventListener('mouseleave', () => {
+                cursorFollower.style.width = '30px';
+                cursorFollower.style.height = '30px';
+                cursorFollower.style.backgroundColor = 'rgba(0,0,0,0.1)';
+            });
+        });
+
+    </script>
+</body>
+</html>

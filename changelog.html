@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Framer - Changelog</title>
+    <style>
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #fff;
+            font-size: 16px;
+            overflow-x: hidden;
+        }
+        
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* 动画关键帧定义 */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from { 
+                transform: translateY(30px); 
+                opacity: 0;
+            }
+            to { 
+                transform: translateY(0); 
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideInLeft {
+            from { 
+                transform: translateX(-50px); 
+                opacity: 0;
+            }
+            to { 
+                transform: translateX(0); 
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideInRight {
+            from { 
+                transform: translateX(50px); 
+                opacity: 0;
+            }
+            to { 
+                transform: translateX(0); 
+                opacity: 1;
+            }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        @keyframes floatUpDown {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        @keyframes floatLeftRight {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(20px); }
+        }
+        
+        @keyframes gradientFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        /* 添加滚动显示类 */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+        
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Header styles */
+        header {
+            border-bottom: 1px solid #f0f0f0;
+            padding: 16px 0;
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            animation: slideInDown 0.5s ease-out;
+        }
+        
+        @keyframes slideInDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        nav {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo {
+            margin-right: 24px;
+            animation: pulse 2s infinite;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 24px;
+        }
+        
+        .nav-link {
+            font-size: 16px;
+            color: #666;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 0;
+            background-color: #000;
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            color: #000;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .nav-link.active {
+            color: #000;
+            font-weight: 500;
+        }
+        
+        .nav-link.active::after {
+            width: 100%;
+        }
+        
+        /* Hero section */
+        .hero {
+            text-align: center;
+            padding: 120px 0 80px;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(120deg, rgba(255,255,255,0.8) 0%, rgba(250,250,250,0.8) 100%);
+        }
+        
+        /* 背景动画元素 */
+        .bg-animation {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .bg-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(45deg, rgba(0,0,0,0.02) 0%, rgba(0,0,0,0) 70%);
+            opacity: 0.5;
+        }
+        
+        .bg-circle-1 {
+            width: 400px;
+            height: 400px;
+            top: -200px;
+            left: -200px;
+            animation: rotate 30s linear infinite;
+        }
+        
+        .bg-circle-2 {
+            width: 600px;
+            height: 600px;
+            bottom: -300px;
+            right: -300px;
+            animation: rotate 40s linear infinite reverse;
+        }
+        
+        .bg-circle-3 {
+            width: 300px;
+            height: 300px;
+            top: 20%;
+            right: 10%;
+            animation: floatUpDown 15s ease-in-out infinite;
+        }
+        
+        .bg-circle-4 {
+            width: 200px;
+            height: 200px;
+            bottom: 30%;
+            left: 15%;
+            animation: floatLeftRight 12s ease-in-out infinite;
+        }
+        
+        .bg-gradient {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(120deg, rgba(250,250,250,0.1) 0%, rgba(255,255,255,0.1) 50%, rgba(250,250,250,0.1) 100%);
+            background-size: 200% 200%;
+            animation: gradientFlow 15s ease infinite;
+            z-index: -2;
+        }
+        
+        .hero h1 {
+            font-size: 54px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            animation: slideUp 0.8s ease-out forwards;
+            opacity: 0;
+            position: relative;
+        }
+        
+        .hero h1::after {
+            content: '';
+            position: absolute;
+            width: 80px;
+            height: 4px;
+            background-color: #000;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+        
+        .hero p {
+            font-size: 24px;
+            color: #666;
+            max-width: 700px;
+            margin: 0 auto 40px;
+            animation: slideUp 0.8s ease-out 0.2s forwards;
+            opacity: 0;
+        }
+        
+        /* Changelog section */
+        .changelog {
+            padding: 80px 0;
+            position: relative;
+            background: linear-gradient(180deg, #fff 0%, #f9f9f9 100%);
+        }
+        
+        .changelog-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        .changelog-bg::before {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0,0,0,0.02) 0%, rgba(0,0,0,0) 70%);
+            top: 10%;
+            left: -200px;
+            animation: floatLeftRight 20s ease-in-out infinite alternate;
+        }
+        
+        .changelog-bg::after {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0,0,0,0.02) 0%, rgba(0,0,0,0) 70%);
+            bottom: 10%;
+            right: -250px;
+            animation: floatUpDown 25s ease-in-out infinite alternate;
+        }
+        
+        .changelog-filters {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+        
+        .filter-button {
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 16px;
+            background-color: transparent;
+            border: 1px solid #e5e5e5;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-button:hover {
+            background-color: #f5f5f5;
+            color: #000;
+        }
+        
+        .filter-button.active {
+            background-color: #000;
+            color: #fff;
+            border-color: #000;
+        }
+        
+        .changelog-timeline {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .timeline-line {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            width: 2px;
+            background-color: #e5e5e5;
+            transform: translateX(-50%);
+        }
+        
+        .changelog-item {
+            display: flex;
+            margin-bottom: 60px;
+            position: relative;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+        
+        .changelog-item.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .changelog-item:nth-child(odd) {
+            flex-direction: row-reverse;
+        }
+        
+        .changelog-item:nth-child(odd) .changelog-content {
+            text-align: right;
+            padding-right: 30px;
+        }
+        
+        .changelog-item:nth-child(even) .changelog-content {
+            text-align: left;
+            padding-left: 30px;
+        }
+        
+        .changelog-date {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #000;
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 1;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .changelog-content {
+            flex: 1;
+            max-width: 45%;
+        }
+        
+        .changelog-version {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #000;
+        }
+        
+        .changelog-card {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+        }
+        
+        .changelog-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+        }
+        
+        .changelog-category {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+        }
+        
+        .category-feature {
+            background-color: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        .category-improvement {
+            background-color: #e8f5e9;
+            color: #388e3c;
+        }
+        
+        .category-bugfix {
+            background-color: #ffebee;
+            color: #d32f2f;
+        }
+        
+        .changelog-description {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 16px;
+        }
+        
+        .changelog-list {
+            list-style: none;
+            margin-left: 0;
+            padding-left: 0;
+        }
+        
+        .changelog-list li {
+            position: relative;
+            padding-left: 24px;
+            margin-bottom: 12px;
+            font-size: 16px;
+            color: #666;
+        }
+        
+        .changelog-list li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 8px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: #000;
+        }
+        
+        .changelog-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #f0f0f0;
+        }
+        
+        .changelog-author {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .author-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: #f0f0f0;
+            margin-right: 8px;
+            overflow: hidden;
+        }
+        
+        .changelog-link {
+            font-size: 14px;
+            color: #000;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .changelog-link:hover {
+            text-decoration: underline;
+        }
+        
+        /* 底部版权信息 */
+        footer {
+            background-color: #f8f8f8;
+            padding: 60px 0 40px;
+            text-align: center;
+            border-top: 1px solid #eaeaea;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .footer-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        /* 版权信息部分 - 增强显示效果 */
+        .copyright-section {
+            padding: 30px;
+            background-color: #000;
+            color: #fff;
+            margin-top: 40px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .copyright-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 70%);
+            z-index: 0;
+        }
+        
+        .copyright-logo {
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+        
+        .copyright-container {
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .copyright {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 10px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s ease;
+        }
+        
+        .copyright.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .copyright-secondary {
+            font-size: 14px;
+            color: rgba(255,255,255,0.7);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s ease 0.1s;
+        }
+        
+        .copyright-secondary.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .copyright-divider {
+            width: 60px;
+            height: 3px;
+            background-color: rgba(255,255,255,0.3);
+            margin: 15px auto;
+        }
+        
+        .footer-links {
+            margin-top: 20px;
+            position: relative;
+            z-index: 1;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s ease 0.2s;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+        
+        .footer-links.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .footer-links a {
+            color: rgba(255,255,255,0.8);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .footer-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 1px;
+            bottom: -2px;
+            left: 0;
+            background-color: #fff;
+            transition: width 0.3s ease;
+        }
+        
+        .footer-links a:hover {
+            color: #fff;
+            transform: translateY(-2px);
+        }
+        
+        .footer-links a:hover::after {
+            width: 100%;
+        }
+        
+        .footer-bottom {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 12px;
+            color: rgba(255,255,255,0.5);
+        }
+        
+        /* 浮动元素动画 */
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        /* 鼠标跟随效果 */
+        .cursor-follower {
+            position: fixed;
+            width: 30px;
+            height: 30px;
+            background-color: rgba(0,0,0,0.1);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: transform 0.1s ease, width 0.3s ease, height 0.3s ease, background-color 0.3s ease;
+            opacity: 0;
+        }
+        
+        /* 过滤动画 */
+        .changelog-item.hidden {
+            display: none;
+        }
+        
+        .changelog-item.visible {
+            display: flex;
+            animation: fadeIn 0.5s ease forwards;
+        }
+        
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .hero {
+                padding: 100px 0 60px;
+            }
+            
+            .hero h1 {
+                font-size: 36px;
+            }
+            
+            .hero p {
+                font-size: 18px;
+            }
+            
+            .changelog-timeline {
+                padding: 0 20px;
+            }
+            
+            .timeline-line {
+                left: 20px;
+            }
+            
+            .changelog-item {
+                flex-direction: column !important;
+                padding-left: 40px;
+            }
+            
+            .changelog-item:nth-child(odd) .changelog-content,
+            .changelog-item:nth-child(even) .changelog-content {
+                text-align: left;
+                padding-left: 0;
+                padding-right: 0;
+                max-width: 100%;
+            }
+            
+            .changelog-date {
+                left: 20px;
+                transform: translateX(0);
+            }
+            
+            .changelog-filters {
+                flex-wrap: wrap;
+            }
+            
+            .cursor-follower {
+                display: none;
+            }
+            
+            .copyright-section {
+                padding: 20px;
+                margin-top: 30px;
+            }
+            
+            .footer-links {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 鼠标跟随效果 -->
+    <div class="cursor-follower"></div>
+
+    <!-- Navigation -->
+    <header>
+        <div class="container">
+            <nav>
+                <a href="#" class="logo">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="24" height="24" rx="4" fill="#000"/>
+                    </svg>
+                </a>
+                <div class="nav-links">
+                    <a href="index.html" class="nav-link">Home</a>
+                    <a href="changelog.html" class="nav-link active">Changelog</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <!-- 背景动画元素 -->
+        <div class="bg-animation">
+            <div class="bg-gradient"></div>
+            <div class="bg-circle bg-circle-1"></div>
+            <div class="bg-circle bg-circle-2"></div>
+            <div class="bg-circle bg-circle-3"></div>
+            <div class="bg-circle bg-circle-4"></div>
+        </div>
+        
+        <div class="container">
+            <h1>Changelog</h1>
+            <p>所有的更改日志</p>
+        </div>
+    </section>
+
+    <!-- Changelog Section -->
+    <section class="changelog">
+        <!-- 背景动画 -->
+        <div class="changelog-bg"></div>
+        
+        <div class="container">
+            <!-- Filters -->
+            <div class="changelog-filters reveal">
+                <button class="filter-button active" data-filter="all">All</button>
+                <button class="filter-button" data-filter="feature">Features</button>
+                <button class="filter-button" data-filter="improvement">Improvements</button>
+                <button class="filter-button" data-filter="bugfix">Bug Fixes</button>
+            </div>
+            
+            <!-- Timeline -->
+            <div class="changelog-timeline">
+                <div class="timeline-line"></div>
+                
+                <!-- Changelog Item 1 -->
+                <div class="changelog-item reveal" data-category="feature">
+                    <div class="changelog-date">March 15, 2025</div>
+                    <div class="changelog-content">
+                        <div class="changelog-version">Version 5.2.0</div>
+                        <div class="changelog-card">
+                            <span class="changelog-category category-feature">New Feature</span>
+                            <h3>Advanced Animation Controls</h3>
+                            <p class="changelog-description">We've completely revamped our animation system to give you more control and flexibility.</p>
+                            <ul class="changelog-list">
+                                <li>Added custom easing function editor</li>
+                                <li>Introduced animation presets library</li>
+                                <li>New timeline interface for complex animations</li>
+                                <li>Support for scroll-triggered animations</li>
+                            </ul>
+                            <div class="changelog-footer">
+                                <div class="changelog-author">
+                                    <div class="author-avatar">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <rect width="24" height="24" rx="12" fill="#000"/>
+                                        </svg>
+                                    </div>
+                                    <span>Sarah Johnson</span>
+                                </div>
+                                <a href="#" class="changelog-link">Read more</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Changelog Item 2 -->
+                <div class="changelog-item reveal" style="transition-delay: 0.2s;" data-category="improvement">
+                    <div class="changelog-date">March 8, 2025</div>
+                    <div class="changelog-content">
+                        <div class="changelog-version">Version 5.1.2</div>
+                        <div class="changelog-card">
+                            <span class="changelog-category category-improvement">Improvement</span>
+                            <h3>Performance Optimization</h3>
+                            <p class="changelog-description">We've made significant improvements to the performance of the editor and published sites.</p>
+                            <ul class="changelog-list">
+                                <li>Reduced initial load time by 40%</li>
+                                <li>Optimized asset loading for faster page transitions</li>
+                                <li>Improved memory management for complex projects</li>
+                                <li>Enhanced caching strategy for published sites</li>
+                            </ul>
+                            <div class="changelog-footer">
+                                <div class="changelog-author">
+                                    <div class="author-avatar">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <rect width="24" height="24" rx="12" fill="#000"/>
+                                        </svg>
+                                    </div>
+                                    <span>Michael Chen</span>
+                                </div>
+                                <a href="#" class="changelog-link">Read more</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Changelog Item 3 -->
+                <div class="changelog-item reveal" style="transition-delay: 0.4s;" data-category="bugfix">
+                    <div class="changelog-date">February 28, 2025</div>
+                    <div class="changelog-content">
+                        <div class="changelog-version">Version 5.1.1</div>
+                        <div class="changelog-card">
+                            <span class="changelog-category category-bugfix">Bug Fix</span>
+                            <h3>Critical Fixes</h3>
+                            <p class="changelog-description">We've addressed several important issues reported by our users.</p>
+                            <ul class="changelog-list">
+                                <li>Fixed layout issues on Safari browsers</li>
+                                <li>Resolved authentication problems with Google login</li>
+                                <li>Fixed image optimization pipeline for WebP format</li>
+                                <li>Corrected responsive behavior on ultra-wide screens</li>
+                            </ul>
+                            <div class="changelog-footer">
+                                <div class="changelog-author">
+                                    <div class="author-avatar">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <rect width="24" height="24" rx="12" fill="#000"/>
+                                        </svg>
+                                    </div>
+                                    <span>Alex Rodriguez</span>
+                                </div>
+                                <a href="#" class="changelog-link">Read more</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Changelog Item 4 -->
+                <div class="changelog-item reveal" style="transition-delay: 0.6s;" data-category="feature">
+                    <div class="changelog-date">February 15, 2025</div>
+                    <div class="changelog-content">
+                        <div class="changelog-version">Version 5.1.0</div>
+                        <div class="changelog-card">
+                            <span class="changelog-category category-feature">New Feature</span>
+                            <h3>Collaboration Tools</h3>
+                            <p class="changelog-description">We're excited to introduce real-time collaboration features to Framer.</p>
+                            <ul class="changelog-list">
+                                <li>Real-time editing with multiple team members</li>
+                                <li>Comments and feedback system</li>
+                                <li>Version history and rollback capabilities</li>
+                                <li>Enhanced team permission management</li>
+                            </ul>
+                            <div class="changelog-footer">
+                                <div class="changelog-author">
+                                    <div class="author-avatar">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <rect width="24" height="24" rx="12" fill="#000"/>
+                                        </svg>
+                                    </div>
+                                    <span>Emma Wilson</span>
+                                </div>
+                                <a href="#" class="changelog-link">Read more</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Changelog Item 5 -->
+                <div class="changelog-item reveal" style="transition-delay: 0.8s;" data-category="feature">
+                    <div class="changelog-date">January 30, 2025</div>
+                    <div class="changelog-content">
+                        <div class="changelog-version">Version 5.0.0</div>
+                        <div class="changelog-card">
+                            <span class="changelog-category category-feature">Major Release</span>
+                            <h3>Framer 5.0 Launch</h3>
+                            <p class="changelog-description">We're thrilled to announce the release of Framer 5.0, our biggest update yet.</p>
+                            <ul class="changelog-list">
+                                <li>Completely redesigned user interface</li>
+                                <li>New component system with enhanced customization</li>
+                                <li>Integrated CMS capabilities</li>
+                                <li>Advanced SEO tools and analytics</li>
+                                <li>Expanded template library with 50+ new designs</li>
+                            </ul>
+                            <div class="changelog-footer">
+                                <div class="changelog-author">
+                                    <div class="author-avatar">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <rect width="24" height="24" rx="12" fill="#000"/>
+                                        </svg>
+                                    </div>
+                                    <span>Thomas Wright</span>
+                                </div>
+                                <a href="#" class="changelog-link">Read more</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 底部版权信息 -->
+    <footer>
+        
+        <div class="container">
+            <!-- 增强版权信息部分 -->
+            <div class="copyright-section reveal">
+                <div class="copyright-logo">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="24" height="24" rx="4" fill="#fff"/>
+                    </svg>
+                </div>
+                <div class="copyright-container">
+                    <p class="copyright reveal">Copyright © 2025 Yuki-studio, Inc. All rights reserved.</p>
+                    <div class="copyright-divider"></div>
+                    <p class="copyright-secondary reveal">感谢所有开发者和用户</p>
+                </div>
+                <div class="footer-links reveal">
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Cookie Policy</a>
+                    <a href="#">Contact Us</a>
+                    <a href="#">Careers</a>
+                </div>
+                <div class="footer-bottom">
+                    <p>Made with ❤️ from Maori</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 滚动显示动画
+        function revealOnScroll() {
+            const reveals = document.querySelectorAll('.reveal');
+            
+            for (let i = 0; i < reveals.length; i++) {
+                const windowHeight = window.innerHeight;
+                const elementTop = reveals[i].getBoundingClientRect().top;
+                const elementVisible = 150;
+                
+                if (elementTop < windowHeight - elementVisible) {
+                    reveals[i].classList.add('active');
+                }
+            }
+        }
+        
+        // 初始化时检查一次
+        revealOnScroll();
+        
+        // 滚动时检查
+        window.addEventListener('scroll', revealOnScroll);
+        
+        // 过滤器功能
+        const filterButtons = document.querySelectorAll('.filter-button');
+        
+        filterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // 移除所有按钮的active类
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                
+                // 为当前按钮添加active类
+                button.classList.add('active');
+                
+                // 获取过滤类别
+                const filter = button.getAttribute('data-filter');
+                
+                // 获取所有更新项
+                const items = document.querySelectorAll('.changelog-item');
+                
+                // 应用过滤
+                items.forEach(item => {
+                    // 先隐藏所有项目并重置动画
+                    item.style.opacity = '0';
+                    item.style.transform = 'translateY(30px)';
+                    
+                    // 根据过滤条件显示或隐藏
+                    setTimeout(() => {
+                        if (filter === 'all' || item.getAttribute('data-category') === filter) {
+                            item.classList.remove('hidden');
+                            item.classList.add('visible');
+                            item.style.opacity = '1';
+                            item.style.transform = 'translateY(0)';
+                        } else {
+                            item.classList.add('hidden');
+                            item.classList.remove('visible');
+                        }
+                    }, 300);
+                });
+            });
+        });
+        
+        // 鼠标跟随效果
+        const cursorFollower = document.querySelector('.cursor-follower');
+        
+        document.addEventListener('mousemove', (e) => {
+            cursorFollower.style.opacity = '1';
+            cursorFollower.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+        });
+        
+        // 鼠标悬停在按钮和链接上时的效果
+        const interactiveElements = document.querySelectorAll('a, button');
+        
+        interactiveElements.forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                cursorFollower.style.width = '50px';
+                cursorFollower.style.height = '50px';
+                cursorFollower.style.backgroundColor = 'rgba(0,0,0,0.05)';
+            });
+            
+            el.addEventListener('mouseleave', () => {
+                cursorFollower.style.width = '30px';
+                cursorFollower.style.height = '30px';
+                cursorFollower.style.backgroundColor = 'rgba(0,0,0,0.1)';
+            });
+        });
+        
+    </script>
+</body>
+</html>
